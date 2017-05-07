@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="styles/chessboard.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
   </head>
+
   <body>
-    <h1>04-chess</h4>
+    <h1>Assignment-02: Chess</h4>
+    <p>Your Game ID: <span id="game-id"></span></p>
+    <div id="board" style="width: 400px"></div>
+    <button type="button" name="button" id="restart">Restart</button><br />
+    <button type="button" name="button" id="host">Host</button><br />
+    <button type="button" name="button" id="join">Join</button>
+    <input type="text" name="join-id" placeholder="Game ID" id="join-id">
+    <script type="text/javascript" src ="app.js" />
   </body>
 </html>
-

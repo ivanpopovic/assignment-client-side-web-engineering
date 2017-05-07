@@ -31,5 +31,8 @@
     "socket.io-client": "^1.5.1",
     "time-grunt": "^1.2.1",
     "uglifyify": "^3.0.4"
+  },
+  "dependencies": {
+    "chess.js": "^0.10.2"
   }
 }
