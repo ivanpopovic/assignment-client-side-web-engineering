@@ -8,11 +8,11 @@ const remoteDB = new PouchDB('https://couchdb.5k20.com/mmt-ss2017', {
     }
 })
 
-localDB
-    .sync(remoteDB, {
-        live: true,
-        retry: true
-    })
+// localDB
+//     .sync(remoteDB, {
+//         live: true,
+//         retry: true
+//     })
 
 export default class Store {
     /**
@@ -20,6 +20,11 @@ export default class Store {
      * @param {function()} [callback] Called when the Store is ready
      */
     constructor(name, callback) {
+        localDB
+            .sync(remoteDB, {
+                live: true,
+                retry: true
+            })
         /**
          * Read the local ItemList from localStorage.
          *
@@ -76,7 +81,12 @@ export default class Store {
      * @param {function()} [callback] Called when partialRecord is applied
      */
     update(update, callback) {
+        this.getStore().then((todos) => {
+            let updateTodo = todos.find(todo => todo._id === update.id.toString())
+            Object.assign(updateTodo, update)
 
+            localDB.put(updateTodo).then(callback())
+        })
     }
 
     /**
@@ -88,6 +98,7 @@ export default class Store {
     insert(item, callback) {
         localDB.put({
             _id: item.id.toString(),
+            id: item.id,
             title: item.title,
             completed: item.completed,
         }).then(() => callback())
