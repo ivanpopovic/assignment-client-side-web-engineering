@@ -1,7 +1,21 @@
 import PouchDB from 'pouchdb'
 
 const localDB = new PouchDB('mmt-ss2017')
-const remoteDB = new PouchDB('https://couchdb.5k20.com/mmt-ss2017')
+const remoteDB = new PouchDB('https://couchdb.5k20.com/mmt-ss2017', {
+    auth: {
+        username: 'ipopovic',
+        password: 'test'
+    }
+})
+
+localDB
+    .sync(remoteDB, {
+        live: true,
+        retry: true
+    })
+    .on('error', err => {
+        console.error(`An error occured: ${err}`)
+    })
 
 export default class Store {
     /**
@@ -67,7 +81,11 @@ export default class Store {
      * @param {function()} [callback] Called when item is inserted
      */
     insert(item, callback) {
-
+        localDB.put({
+            _id: item.id.toString(),
+            title: item.title,
+            completed: item.completed,
+        }).then(() => callback())
     }
 
     /**
