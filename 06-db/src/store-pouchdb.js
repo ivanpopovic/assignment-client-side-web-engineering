@@ -28,6 +28,11 @@ export default class Store {
         this.getStore = () => {
             return localDB.allDocs({
                 include_docs: true
+            }).then((allDoc) => {
+                const todos = allDoc.rows.map((todo) => {
+                    return todo.doc
+                })
+                return todos
             })
         }
 
@@ -48,10 +53,7 @@ export default class Store {
 	 * })
      */
     find(query, callback) {
-        this.getStore().then((allDoc) => {
-            const todos = allDoc.rows.map((todo) => {
-                return todo.doc
-            })
+        this.getStore().then((todos) => {
             //find function from store.js
             let k
             const filteredTodos = todos.filter((todo) => {
