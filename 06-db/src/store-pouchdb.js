@@ -13,9 +13,6 @@ localDB
         live: true,
         retry: true
     })
-    .on('error', err => {
-        console.error(`An error occured: ${err}`)
-    })
 
 export default class Store {
     /**
@@ -24,24 +21,14 @@ export default class Store {
      */
     constructor(name, callback) {
         /**
-         * @type {ItemList}
-         */
-        let liveTodos
-
-        /**
          * Read the local ItemList from localStorage.
          *
          * @returns {ItemList} Current array of todos
          */
         this.getStore = () => {
-        }
-
-        /**
-         * Write the local ItemList to localStorage.
-         *
-         * @param {ItemList} todos Array of todos to write
-         */
-        this.setStore = (todos) => {
+            return localDB.allDocs({
+                include_docs: true
+            })
         }
 
         if (callback) {
@@ -61,8 +48,24 @@ export default class Store {
 	 * })
      */
     find(query, callback) {
-
+        this.getStore().then((allDoc) => {
+            const todos = allDoc.rows.map((todo) => {
+                return todo.doc
+            })
+            //find function from store.js
+            let k
+            const filteredTodos = todos.filter((todo) => {
+                for (k in query) {
+                    if (query[k] !== todo[k]) {
+                        return false
+                    }
+                }
+                return true
+            })
+            callback(filteredTodos)
+        })
     }
+
 
     /**
      * Update an item in the Store.
@@ -104,6 +107,14 @@ export default class Store {
      * @param {function(number, number, number)} callback Called when the count is completed
      */
     count(callback) {
+        const countItems = (todos) => {
+            const total = todos.length
+            const completed = todos.filter((todo) => {
+                return todo.completed
+            }).length
+            callback(total, total - completed, completed)
+        }
 
+        this.find({}, countItems)
     }
 }
