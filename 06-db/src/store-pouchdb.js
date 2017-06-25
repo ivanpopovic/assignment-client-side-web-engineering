@@ -111,7 +111,14 @@ export default class Store {
      * @param {function(ItemList)|function()} [callback] Called when records matching query are removed
      */
     remove(query, callback) {
-
+        const removeTodos = (todos) => {
+            localDB.bulkDocs(todos.map(todo => ({
+                _id: todo._id,
+                _rev: todo._rev,
+                _deleted: true,
+            }))).then(callback)
+        }
+        this.find(query, removeTodos)
     }
 
     /**
@@ -120,14 +127,13 @@ export default class Store {
      * @param {function(number, number, number)} callback Called when the count is completed
      */
     count(callback) {
-        const countItems = (todos) => {
+        this.getStore().then((todos) => {
             const total = todos.length
-            const completed = todos.filter((todo) => {
-                return todo.completed
-            }).length
+            let completed = 0
+            todos.forEach((todo) => {
+                completed += todo.completed
+            })
             callback(total, total - completed, completed)
-        }
-
-        this.find({}, countItems)
+        })
     }
 }
