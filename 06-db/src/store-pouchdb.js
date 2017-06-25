@@ -101,7 +101,7 @@ export default class Store {
             id: item.id,
             title: item.title,
             completed: item.completed,
-        }).then(() => callback())
+        }).then(callback)
     }
 
     /**
